@@ -1,29 +1,52 @@
 {
   "name": "personal-blog-api",
   "version": "1.0.0",
-  "main": "build/server.js",
-  "description": "A personal blog API with TS and Express",
-  "keywords": [],
-  "author": "_dnnr1",
-  "license": "MIT",
+  "main": "index.js",
   "scripts": {
-    "dev": "tsnd --respawn --transpile-only src/server.ts",
-    "build": "tsc",
-    "start": "node build/server.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node build/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run lint"
   },
-  "devDependencies": {
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.8.2"
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.1",
-    "@types/node": "^22.13.14",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dnnr1/personal-blog-api.git"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dnnr1/personal-blog-api/issues"
+  },
+  "homepage": "https://github.com/dnnr1/personal-blog-api#readme",
+  "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
     "pg": "^8.14.1",
     "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.7.5",
+    "gts": "^6.0.2",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.3"
   }
 }
