@@ -24,7 +24,7 @@ const create = async (req: Request, res: Response) => {
     });
   } catch (error) {
     const errorResponse = handleError(error);
-    res.status(errorResponse.status).json(handleError(error));
+    res.status(errorResponse.status).json(errorResponse);
   }
 };
 
