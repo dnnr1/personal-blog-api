@@ -6,6 +6,8 @@ const { JWT_SECRET } = process.env;
 
 type TokenPayload = {
   id: number;
+  username: string;
+  email: string;
 };
 
 export const authenticate = (

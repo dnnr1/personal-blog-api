@@ -1,27 +1,24 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import { register, login } from './core/controllers/users';
-import { create, list, del, update } from './core/controllers/posts';
-import { authenticate } from './core/middlewares/auth';
 import cors from 'cors';
 import 'dotenv/config';
+import router from './routes';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-
-app.post('/register', register);
-app.post('/login', login);
-
-app.use(authenticate);
-app.post('/posts', authenticate, create);
-app.get('/posts', list);
-app.put('/posts/:id', update);
-app.delete('/posts/:id', del);
+app.use(router);
 
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);

@@ -1,0 +1,6 @@
+POSTGRES_DB=blog_db
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
+POSTGRES_HOST=localhost
+PORT=3000
+JWT_SECRET=deeznuts

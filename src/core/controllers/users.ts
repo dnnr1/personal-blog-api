@@ -10,7 +10,7 @@ const { JWT_SECRET, NODE_ENV } = process.env;
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { email, password } = userSchema.parse(req.body);
+    const { email, password, username } = userSchema.parse(req.body);
     const hashedPassword = await bcrypt.hash(password, 10);
     const userExists = await knex('users').where({ email }).first();
     if (userExists) {
@@ -24,11 +24,17 @@ export const register = async (req: Request, res: Response) => {
     const [user] = await knex('users')
       .insert({
         email,
+        username,
         password: hashedPassword,
       })
       .returning('id');
-    const token = jwt.sign({ id: user }, JWT_SECRET as string, {
-      expiresIn: '1h',
+    const tokenData = {
+      id: user.id,
+      username,
+      email,
+    };
+    const token = jwt.sign(tokenData, JWT_SECRET as string, {
+      expiresIn: '3d',
     });
     res.cookie('token', token, {
       httpOnly: true,
@@ -40,6 +46,7 @@ export const register = async (req: Request, res: Response) => {
       message: 'User registered successfully',
       user: {
         id: user.id,
+        username,
         email,
       },
       token,
@@ -71,8 +78,13 @@ export const login = async (req: Request, res: Response) => {
       });
       return;
     }
-    const token = jwt.sign({ id: user.id }, JWT_SECRET as string, {
-      expiresIn: '1h',
+    const tokenData = {
+      id: user.id,
+      username: user.username,
+      email,
+    };
+    const token = jwt.sign(tokenData, JWT_SECRET as string, {
+      expiresIn: '3d',
     });
     res.cookie('token', token, {
       httpOnly: true,
@@ -84,6 +96,7 @@ export const login = async (req: Request, res: Response) => {
       message: 'Login successful',
       user: {
         id: user.id,
+        username: user.username,
         email,
       },
       token,
