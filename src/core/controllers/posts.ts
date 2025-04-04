@@ -93,7 +93,7 @@ const del = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { id: userId } = req.user;
   try {
-    const deletedPost = await knex('posts')
+    const [deletedPost] = await knex('posts')
       .where({ id, user_id: userId })
       .del()
       .returning('*');
