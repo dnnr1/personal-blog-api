@@ -49,7 +49,6 @@ export const register = async (req: Request, res: Response) => {
         username,
         email,
       },
-      token,
     });
   } catch (error: unknown) {
     const errorResponse = handleError(error);
@@ -99,7 +98,6 @@ export const login = async (req: Request, res: Response) => {
         username: user.username,
         email,
       },
-      token,
     });
   } catch (error) {
     const errorResponse = handleError(error);
