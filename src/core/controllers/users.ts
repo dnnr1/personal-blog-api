@@ -1,12 +1,9 @@
 import { Request, Response } from 'express';
 import knex from '../../db';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { userLoginSchema, userSchema } from '../../schemas';
 import handleError from '../utils/handleError';
-import 'dotenv/config';
-
-const { JWT_SECRET, NODE_ENV } = process.env;
+import setCookie from '../utils/setCookie';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -28,26 +25,22 @@ export const register = async (req: Request, res: Response) => {
         password: hashedPassword,
       })
       .returning('id');
-    const tokenData = {
+    const data = {
       id: user.id,
-      username,
+      username: username,
       email,
     };
-    const token = jwt.sign(tokenData, JWT_SECRET as string, {
-      expiresIn: '3d',
-    });
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: NODE_ENV === 'production',
+    setCookie({
+      name: 'token',
+      data,
+      res,
     });
     res.status(201).json({
       ok: true,
       status: 201,
       message: 'User registered successfully',
       user: {
-        id: user.id,
-        username,
-        email,
+        ...data,
       },
     });
   } catch (error: unknown) {
@@ -59,44 +52,34 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = userLoginSchema.parse(req.body);
-    const user = await knex('users').where({ email }).first();
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!user) {
+    const user = await knex('users')
+      .where({ email })
+      .select('id', 'password', 'username')
+      .first();
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       res.status(401).json({
         ok: false,
         status: 401,
-        message: 'User not found',
+        message: 'Invalid credentials',
       });
       return;
     }
-    if (!isPasswordValid) {
-      res.status(401).json({
-        ok: false,
-        status: 401,
-        message: 'Invalid email or password',
-      });
-      return;
-    }
-    const tokenData = {
+    const data = {
       id: user.id,
       username: user.username,
       email,
     };
-    const token = jwt.sign(tokenData, JWT_SECRET as string, {
-      expiresIn: '3d',
-    });
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: NODE_ENV === 'production',
+    setCookie({
+      name: 'token',
+      data,
+      res,
     });
     res.json({
       ok: true,
       status: 200,
       message: 'Login successful',
       user: {
-        id: user.id,
-        username: user.username,
-        email,
+        ...data,
       },
     });
   } catch (error) {
