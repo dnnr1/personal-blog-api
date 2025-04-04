@@ -55,7 +55,7 @@ const list = async (_: Request, res: Response) => {
 
 const update = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { id: userId } = req.user;
+  const { id: userId, username } = req.user;
   try {
     const { title, content } = postSchema.parse(req.body);
     const updated_at = new Date();
@@ -77,7 +77,7 @@ const update = async (req: Request, res: Response) => {
       message: 'Post updated successfully',
       post: {
         id: post.id,
-        username: post.username,
+        username,
         title: post.title,
         content: post.content,
         created_at: post.created_at,
