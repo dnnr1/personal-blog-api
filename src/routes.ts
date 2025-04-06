@@ -1,11 +1,10 @@
-import { register, login } from './core/controllers/users';
-import { create, list, del, update } from './core/controllers/posts';
-import { authenticate } from './core/middlewares/auth';
+import { register, login } from './core/controllers/user';
+import { create, list, del, update } from './core/controllers/post';
+import { authenticate } from './core/middlewares/authenticate';
 import { Router } from 'express';
 
 const router = Router();
 
-// public
 router.post('/register', register);
 router.post('/login', login);
 router.get('/posts', list);

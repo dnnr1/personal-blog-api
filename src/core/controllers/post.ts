@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import knex from '../../db';
-import { postSchema } from '../../schemas';
 import handleError from '../utils/handleError';
+import { postInputSchema } from '../schemas/post';
 
 const create = async (req: Request, res: Response) => {
   try {
-    const { title, content } = postSchema.parse(req.body);
+    const { title, content } = postInputSchema.parse(req.body);
     const { id } = req.user;
     const [post] = await knex('posts')
       .insert({ title, content, user_id: id })
@@ -57,7 +57,7 @@ const update = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { id: userId, username } = req.user;
   try {
-    const { title, content } = postSchema.parse(req.body);
+    const { title, content } = postInputSchema.parse(req.body);
     const updated_at = new Date();
     const [post] = await knex('posts')
       .where({ id, user_id: userId })

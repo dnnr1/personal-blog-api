@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import 'dotenv/config';
 
 type ErrorResponse = {
   ok: boolean;
@@ -6,6 +7,8 @@ type ErrorResponse = {
   message?: string;
   errors?: unknown;
 };
+
+const env = process.env.NODE_ENV || 'development';
 
 const handleError = (error: unknown): ErrorResponse => {
   if (error instanceof z.ZodError) {
@@ -15,6 +18,7 @@ const handleError = (error: unknown): ErrorResponse => {
     ok: false,
     status: 500,
     message: 'Internal server error',
+    errors: env === 'production' ? undefined : error,
   };
 };
 
