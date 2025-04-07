@@ -42,7 +42,6 @@ const login = async (
 ): Promise<ApiResponse<UserBaseSchema>> => {
   const { email, password } = input;
   const user = await userRepository.findByEmail(email);
-  console.log(user);
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return {
       ok: false,
