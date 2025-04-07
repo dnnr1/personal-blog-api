@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import router from './routes';
+import errorHandler from './core/middlewares/errorHandler';
 import 'dotenv/config';
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(router);
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);
