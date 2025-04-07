@@ -14,7 +14,7 @@ export const userLoginInputSchema = userRegisterInputSchema.merge(
 );
 
 export const userBaseSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   username: z.string(),
   email: z.string(),
   created_at: z.string(),

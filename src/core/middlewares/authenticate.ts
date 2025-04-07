@@ -5,7 +5,7 @@ import 'dotenv/config';
 const { JWT_SECRET } = process.env;
 
 type TokenPayload = {
-  id: number;
+  id: string;
   username: string;
   email: string;
 };

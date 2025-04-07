@@ -2,10 +2,10 @@ import { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('posts', table => {
-    table.increments('id').primary();
+    table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
     table
-      .integer('user_id')
-      .unsigned()
+      .uuid('user_id')
+      .notNullable()
       .references('id')
       .inTable('users')
       .onDelete('CASCADE');

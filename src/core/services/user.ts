@@ -19,10 +19,11 @@ const register = async (
       message: 'User already exists',
     };
   }
+  const hashedPassword = await bcrypt.hash(input.password, 10);
   const data = await userRepository.create({
     ...input,
+    password: hashedPassword,
   });
-  console.log(data);
   return {
     ok: true,
     status: code.CREATED,
@@ -41,6 +42,7 @@ const login = async (
 ): Promise<ApiResponse<UserBaseSchema>> => {
   const { email, password } = input;
   const user = await userRepository.findByEmail(email);
+  console.log(user);
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return {
       ok: false,
