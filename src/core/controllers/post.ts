@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import knex from '../../db';
 import handleError from '../utils/handleError';
 import { postInputSchema } from '../schemas/post';
+import isValidUUID from '../utils/isValidUUID';
 
 const create = async (req: Request, res: Response) => {
   try {
@@ -59,6 +60,15 @@ const update = async (req: Request, res: Response) => {
   try {
     const { title, content } = postInputSchema.parse(req.body);
     const updated_at = new Date();
+    const isValidPostId = isValidUUID(id);
+    if (!isValidPostId) {
+      res.status(400).json({
+        ok: false,
+        status: 400,
+        message: 'Post not found',
+      });
+      return;
+    }
     const [post] = await knex('posts')
       .where({ id, user_id: userId })
       .update({ title, content, updated_at })
@@ -93,6 +103,15 @@ const del = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { id: userId } = req.user;
   try {
+    const isValidPostId = isValidUUID(id);
+    if (!isValidPostId) {
+      res.status(400).json({
+        ok: false,
+        status: 400,
+        message: 'Post not found',
+      });
+      return;
+    }
     const [deletedPost] = await knex('posts')
       .where({ id, user_id: userId })
       .del()
