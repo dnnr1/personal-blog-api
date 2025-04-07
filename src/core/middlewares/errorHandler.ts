@@ -4,7 +4,7 @@ import { z } from 'zod';
 const env = process.env.NODE_ENV || 'development';
 
 const errorHandler = (
-  err: Error,
+  err: unknown,
   req: Request,
   res: Response,
   next: NextFunction,
