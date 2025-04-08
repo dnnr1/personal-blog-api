@@ -1,86 +1,36 @@
 import knex from '../../db';
-import { postInputSchema } from '../schemas/post';
+import { createPostInputSchema, updatePostInputSchema } from '../schemas/post';
 import isValidUUID from '../utils/isValidUUID';
-import { Request, Response } from 'express';
+import postService from '../services/post';
+import type { Request, Response } from 'express';
 
 const create = async (req: Request, res: Response) => {
-  const { title, content } = postInputSchema.parse(req.body);
-  const { id } = req.user;
-  const [post] = await knex('posts')
-    .insert({ title, content, user_id: id })
-    .returning('*');
-  res.status(201).json({
+  const { title, content } = createPostInputSchema.parse(req.body);
+  const post = await postService.create({ title, content }, req);
+  res.status(200).json({
     ok: true,
-    status: 201,
-    message: 'Post created successfully',
-    post: {
-      id: post.id,
-      title,
-      content,
-      created_at: post.created_at,
-      updated_at: post.updated_at,
-    },
+    status: 200,
+    data: post,
   });
 };
 
 const list = async (_: Request, res: Response) => {
-  const posts = await knex('posts')
-    .select(
-      'posts.id',
-      'users.username',
-      'posts.title',
-      'posts.content',
-      'posts.created_at',
-      'posts.updated_at',
-    )
-    .join('users', 'posts.user_id', '=', 'users.id')
-    .orderBy('posts.created_at', 'desc');
+  const posts = await postService.getPosts();
   res.status(200).json({
     ok: true,
     status: 200,
-    message: 'Posts retrieved successfully',
-    posts,
+    data: posts,
   });
 };
 
 const update = async (req: Request, res: Response) => {
+  const { title, content } = updatePostInputSchema.parse(req.body);
   const { id } = req.params;
-  const { id: userId, username } = req.user;
-  const { title, content } = postInputSchema.parse(req.body);
-  const updated_at = new Date();
-  const isValidPostId = isValidUUID(id);
-  if (!isValidPostId) {
-    res.status(400).json({
-      ok: false,
-      status: 400,
-      message: 'Post not found',
-    });
-    return;
-  }
-  const [post] = await knex('posts')
-    .where({ id, user_id: userId })
-    .update({ title, content, updated_at })
-    .returning('*');
-  if (!post) {
-    res.status(404).json({
-      ok: false,
-      status: 404,
-      message: 'Post not found',
-    });
-    return;
-  }
+  const post = await postService.update({ title, content, id }, req);
   res.status(200).json({
     ok: true,
     status: 200,
     message: 'Post updated successfully',
-    post: {
-      id: post.id,
-      username,
-      title: post.title,
-      content: post.content,
-      created_at: post.created_at,
-      updated_at: post.updated_at,
-    },
   });
 };
 

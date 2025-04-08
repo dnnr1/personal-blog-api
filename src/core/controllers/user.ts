@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import userService from '../services/user';
 import { userLoginInputSchema, userRegisterInputSchema } from '../schemas/user';
 import setCookie from '../utils/setCookie';
