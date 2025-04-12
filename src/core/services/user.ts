@@ -3,6 +3,7 @@ import userRepository from '../repositories/user';
 import { AppError } from '../utils/AppError';
 import { code } from '../utils/constants';
 import { UserLoginInput, UserRegisterInput } from '../models/user';
+import { omit } from 'lodash';
 
 const register = async (input: UserRegisterInput) => {
   const existingUser = await userRepository.findByEmail(input.email);
@@ -15,7 +16,8 @@ const register = async (input: UserRegisterInput) => {
     ...input,
     password: hashedPassword,
   });
-  return { ...data, password: undefined };
+  const dataWithoutPassword = omit(data, ['password']);
+  return dataWithoutPassword;
 };
 
 const login = async (input: UserLoginInput) => {
@@ -24,7 +26,8 @@ const login = async (input: UserLoginInput) => {
   if (!data || !(await bcrypt.compare(password, data.password))) {
     throw new AppError('Invalid credentials', code.UNAUTHORIZED);
   }
-  return { ...data, password: undefined };
+  const dataWithoutPassword = omit(data, ['password']);
+  return dataWithoutPassword;
 };
 
 const userService = {
