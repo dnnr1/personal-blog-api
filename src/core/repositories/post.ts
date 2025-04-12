@@ -1,19 +1,16 @@
-import type { PostBaseSchema } from '../schemas/post';
 import db from '../../db';
+import { Post, PostCreateInput, Posts } from '../models/post';
 
-const create = async (post: {
-  title: string;
-  content: string;
-  user_id: string;
-}): Promise<PostBaseSchema> => {
+const create = async (post: PostCreateInput): Promise<Post> => {
   const [result] = await db('posts').insert(post).returning('*');
   return result;
 };
 
-const list = async (): Promise<PostBaseSchema[]> => {
+const list = async (): Promise<Posts> => {
   const posts = await db('posts')
     .select(
       'posts.id',
+      'posts.user_id',
       'users.username',
       'posts.title',
       'posts.content',
@@ -30,7 +27,7 @@ const update = async (
   user_id: string,
   updated_at: Date,
   id: string,
-): Promise<PostBaseSchema> => {
+): Promise<Post> => {
   const [result] = await db('posts')
     .where({ id, user_id })
     .update({ title, content, updated_at })
@@ -38,7 +35,7 @@ const update = async (
   return result;
 };
 
-const remove = async (id: string, user_id: string): Promise<PostBaseSchema> => {
+const remove = async (id: string, user_id: string): Promise<Post> => {
   const [result] = await db('posts')
     .where({ id, user_id })
     .del()

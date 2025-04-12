@@ -1,17 +1,12 @@
-import knex from '../../db';
-import { UserInternal } from '../schemas/user';
+import db from '../../db';
+import { User, UserCreateInput } from '../models/user';
 
-const findByEmail = async (email: string): Promise<UserInternal> => {
-  const result = await knex('users').where({ email }).first();
-  return result;
+const findByEmail = async (email: string): Promise<User> => {
+  return await db('users').where({ email }).first();
 };
 
-const create = async (user: {
-  email: string;
-  username: string;
-  password: string;
-}): Promise<UserInternal> => {
-  const [result] = await knex('users').insert(user).returning('*');
+const create = async (user: UserCreateInput): Promise<User> => {
+  const [result] = await db('users').insert(user).returning('*');
   return result;
 };
 

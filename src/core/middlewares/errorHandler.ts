@@ -1,6 +1,7 @@
 import { AppError } from '../utils/AppError';
 import type { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
+import { code } from '../utils/constants';
 
 const errorHandler = (
   err: Error | z.ZodError | unknown,
@@ -10,9 +11,9 @@ const errorHandler = (
   __: NextFunction,
 ) => {
   if (err instanceof z.ZodError) {
-    res.status(400).json({
+    res.status(code.UNAUTHORIZED).json({
       ok: false,
-      status: 400,
+      status: code.UNAUTHORIZED,
       errors: err.errors,
     });
     return;
@@ -25,9 +26,9 @@ const errorHandler = (
     });
     return;
   }
-  res.status(500).json({
+  res.status(code.INTERNAL_SERVER_ERROR).json({
     ok: false,
-    status: 500,
+    status: code.INTERNAL_SERVER_ERROR,
     message: 'Internal server error',
   });
 };

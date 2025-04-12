@@ -1,15 +1,10 @@
 import bcrypt from 'bcrypt';
 import userRepository from '../repositories/user';
-import type {
-  UserPublic,
-  UserLoginInput,
-  UserRegisterInput,
-} from '../schemas/user';
-import { userPublicSchema } from '../schemas/user';
 import { AppError } from '../utils/AppError';
 import { code } from '../utils/constants';
+import { UserLoginInput, UserRegisterInput } from '../models/user';
 
-const register = async (input: UserRegisterInput): Promise<UserPublic> => {
+const register = async (input: UserRegisterInput) => {
   const existingUser = await userRepository.findByEmail(input.email);
   const saltRounds = 10;
   if (existingUser) {
@@ -20,16 +15,16 @@ const register = async (input: UserRegisterInput): Promise<UserPublic> => {
     ...input,
     password: hashedPassword,
   });
-  return userPublicSchema.parse(data);
+  return { ...data, password: undefined };
 };
 
-const login = async (input: UserLoginInput): Promise<UserPublic> => {
+const login = async (input: UserLoginInput) => {
   const { email, password } = input;
   const data = await userRepository.findByEmail(email);
   if (!data || !(await bcrypt.compare(password, data.password))) {
     throw new AppError('Invalid credentials', code.UNAUTHORIZED);
   }
-  return userPublicSchema.parse(data);
+  return { ...data, password: undefined };
 };
 
 const userService = {

@@ -1,32 +1,22 @@
-import type {
-  CreatePostInputSchema,
-  UpdatePostInputSchema,
-} from '../schemas/post';
 import postRepository from '../repositories/post';
 import isValidUUID from '../utils/isValidUUID';
-import { AppError } from '../utils/AppError';
 import { code } from '../utils/constants';
+import { AppError } from '../utils/AppError';
+import {
+  PostCreateInput,
+  PostDeleteInput,
+  PostUpdateInput,
+} from '../models/post';
 
-const create = async (input: CreatePostInputSchema & { user_id: string }) => {
-  const { title, content, user_id } = input;
-  const post = await postRepository.create({ title, content, user_id });
-  return {
-    id: post.id,
-    title,
-    content,
-    created_at: post.created_at,
-    updated_at: post.updated_at,
-  };
+const create = async (input: PostCreateInput) => {
+  return await postRepository.create(input);
 };
 
 const list = async () => {
-  const posts = await postRepository.list();
-  return posts;
+  return await postRepository.list();
 };
 
-const update = async (
-  input: UpdatePostInputSchema & { id: string; user_id: string },
-) => {
+const update = async (input: PostUpdateInput) => {
   const { title, content, id, user_id } = input;
   const isValidPostId = isValidUUID(id);
   if (!isValidPostId) {
@@ -46,7 +36,7 @@ const update = async (
   return post;
 };
 
-const remove = async (input: { id: string; user_id: string }) => {
+const remove = async (input: PostDeleteInput) => {
   const { id, user_id } = input;
   const isValidPostId = isValidUUID(id);
   if (!isValidPostId) {

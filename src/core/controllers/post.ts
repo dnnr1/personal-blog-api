@@ -1,26 +1,27 @@
 import postService from '../services/post';
 import type { Request, Response } from 'express';
 import { createPostSchema, updatePostSchema } from '../schemas/post';
+import { code } from '../utils/constants';
 
 const create = async (req: Request, res: Response) => {
   const { title, content } = createPostSchema.parse(req.body);
   const user_id = req.user.id;
-  const post = await postService.create({ title, content, user_id });
-  res.status(201).json({
+  const data = await postService.create({ title, content, user_id });
+  res.status(code.CREATED).json({
     ok: true,
-    status: 201,
+    status: code.CREATED,
     message: 'Post created successfully',
-    data: post,
+    data,
   });
 };
 
 const list = async (_: Request, res: Response) => {
-  const posts = await postService.list();
-  res.status(200).json({
+  const data = await postService.list();
+  res.status(code.OK).json({
     ok: true,
-    status: 200,
+    status: code.OK,
     message: 'Posts retrieved successfully',
-    data: posts,
+    data,
   });
 };
 
@@ -28,24 +29,24 @@ const update = async (req: Request, res: Response) => {
   const { title, content } = updatePostSchema.parse(req.body);
   const { id } = req.params;
   const user_id = req.user.id;
-  const post = await postService.update({ title, content, id, user_id });
-  res.status(200).json({
+  const data = await postService.update({ title, content, id, user_id });
+  res.status(code.CREATED).json({
     ok: true,
-    status: 200,
+    status: code.CREATED,
     message: 'Post updated successfully',
-    data: post,
+    data,
   });
 };
 
 const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
   const user_id = req.user.id;
-  const post = await postService.remove({ id, user_id });
-  res.status(200).json({
+  const data = await postService.remove({ id, user_id });
+  res.status(code.OK).json({
     ok: true,
-    status: 200,
+    status: code.OK,
     message: 'Post deleted successfully',
-    data: post,
+    data,
   });
 };
 
