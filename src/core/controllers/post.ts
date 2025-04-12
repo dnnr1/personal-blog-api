@@ -1,68 +1,52 @@
-import knex from '../../db';
-import { createPostInputSchema, updatePostInputSchema } from '../schemas/post';
-import isValidUUID from '../utils/isValidUUID';
 import postService from '../services/post';
 import type { Request, Response } from 'express';
+import { createPostSchema, updatePostSchema } from '../schemas/post';
 
 const create = async (req: Request, res: Response) => {
-  const { title, content } = createPostInputSchema.parse(req.body);
-  const post = await postService.create({ title, content }, req);
+  const { title, content } = createPostSchema.parse(req.body);
+  const user_id = req.user.id;
+  const post = await postService.create({ title, content, user_id });
   res.status(200).json({
     ok: true,
     status: 200,
+    message: 'Post created successfully',
     data: post,
   });
 };
 
 const list = async (_: Request, res: Response) => {
-  const posts = await postService.getPosts();
+  const posts = await postService.list();
   res.status(200).json({
     ok: true,
     status: 200,
+    message: 'Posts retrieved successfully',
     data: posts,
   });
 };
 
 const update = async (req: Request, res: Response) => {
-  const { title, content } = updatePostInputSchema.parse(req.body);
+  const { title, content } = updatePostSchema.parse(req.body);
   const { id } = req.params;
-  const post = await postService.update({ title, content, id }, req);
+  const user_id = req.user.id;
+  const post = await postService.update({ title, content, id, user_id });
   res.status(200).json({
     ok: true,
     status: 200,
     message: 'Post updated successfully',
+    data: post,
   });
 };
 
-const del = async (req: Request, res: Response) => {
+const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { id: userId } = req.user;
-  const isValidPostId = isValidUUID(id);
-  if (!isValidPostId) {
-    res.status(400).json({
-      ok: false,
-      status: 400,
-      message: 'Post not found',
-    });
-    return;
-  }
-  const [deletedPost] = await knex('posts')
-    .where({ id, user_id: userId })
-    .del()
-    .returning('*');
-  if (!deletedPost) {
-    res.status(404).json({
-      ok: false,
-      status: 404,
-      message: 'Post not found',
-    });
-    return;
-  }
+  const user_id = req.user.id;
+  const post = await postService.remove({ id, user_id });
   res.status(200).json({
     ok: true,
     status: 200,
     message: 'Post deleted successfully',
+    data: post,
   });
 };
 
-export { create, list, update, del };
+export { create, list, update, remove };

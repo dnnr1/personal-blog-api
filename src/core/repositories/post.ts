@@ -1,17 +1,17 @@
-import knex from 'knex';
-import type { CreatePostOutputSchema, PostBaseSchema } from '../schemas/post';
+import type { PostBaseSchema } from '../schemas/post';
+import db from '../../db';
 
 const create = async (post: {
   title: string;
   content: string;
   user_id: string;
-}): Promise<CreatePostOutputSchema> => {
-  const [result] = await knex('posts').insert(post).returning('*');
+}): Promise<PostBaseSchema> => {
+  const [result] = await db('posts').insert(post).returning('*');
   return result;
 };
 
-const getPosts = async (): Promise<PostBaseSchema[]> => {
-  const posts = await knex('posts')
+const list = async (): Promise<PostBaseSchema[]> => {
+  const posts = await db('posts')
     .select(
       'posts.id',
       'users.username',
@@ -30,18 +30,27 @@ const update = async (
   user_id: string,
   updated_at: Date,
   id: string,
-) => {
-  const [result] = await knex('posts')
+): Promise<PostBaseSchema> => {
+  const [result] = await db('posts')
     .where({ id, user_id })
     .update({ title, content, updated_at })
     .returning('*');
   return result;
 };
 
+const remove = async (id: string, user_id: string): Promise<any> => {
+  const [result] = await db('posts')
+    .where({ id, user_id })
+    .del()
+    .returning('*');
+  return result;
+};
+
 const postRepository = {
   create,
-  getPosts,
+  list,
   update,
+  remove,
 };
 
 export default postRepository;

@@ -1,22 +1,13 @@
 import { z } from 'zod';
 
-export const createPostInputSchema = z.object({
+export const createPostSchema = z.object({
   title: z.string(),
   content: z.string(),
 });
 
-export const updatePostInputSchema = z.object({
-  id: z.string(),
+export const updatePostSchema = z.object({
   title: z.string(),
   content: z.string(),
-});
-
-export const createPostOutputSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  content: z.string(),
-  created_at: z.date(),
-  updated_at: z.date(),
 });
 
 export const postBaseSchema = z.object({
@@ -28,7 +19,7 @@ export const postBaseSchema = z.object({
   updated_at: z.date(),
 });
 
-export type CreatePostInputSchema = z.infer<typeof createPostInputSchema>;
-export type CreatePostOutputSchema = z.infer<typeof createPostOutputSchema>;
-export type UpdatePostInputSchema = z.infer<typeof updatePostInputSchema>;
+export type CreatePostInputSchema = z.infer<typeof createPostSchema>;
+export type CreatePostOutputSchema = z.infer<typeof createPostSchema>;
+export type UpdatePostInputSchema = z.infer<typeof updatePostSchema>;
 export type PostBaseSchema = z.infer<typeof postBaseSchema>;

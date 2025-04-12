@@ -3,12 +3,12 @@ import type {
   UpdatePostInputSchema,
 } from '../schemas/post';
 import postRepository from '../repositories/post';
-import type { Request } from 'express';
 import isValidUUID from '../utils/isValidUUID';
+import { AppError } from '../utils/AppError';
+import { code } from '../utils/constants';
 
-const create = async (input: CreatePostInputSchema, req: Request) => {
-  const { title, content } = input;
-  const { id: user_id } = req.user;
+const create = async (input: CreatePostInputSchema & { user_id: string }) => {
+  const { title, content, user_id } = input;
   const post = await postRepository.create({ title, content, user_id });
   return {
     id: post.id,
@@ -19,38 +19,51 @@ const create = async (input: CreatePostInputSchema, req: Request) => {
   };
 };
 
-const getPosts = async () => {
-  const posts = await postRepository.getPosts();
+const list = async () => {
+  const posts = await postRepository.list();
   return posts;
 };
 
-const update = async (input: UpdatePostInputSchema, req: Request) => {
-  const { title, content, id } = input;
-  const { id: user_id } = req.user;
-  const updated_at = new Date();
+const update = async (
+  input: UpdatePostInputSchema & { id: string; user_id: string },
+) => {
+  const { title, content, id, user_id } = input;
   const isValidPostId = isValidUUID(id);
   if (!isValidPostId) {
-    return {
-      ok: false,
-      status: 400,
-      message: 'Post not found',
-    };
+    throw new AppError('Post not found', code.BAD_REQUEST);
   }
-  const post = postRepository.update(title, content, user_id, updated_at, id);
+  const updated_at = new Date();
+  const post = await postRepository.update(
+    title,
+    content,
+    user_id,
+    updated_at,
+    id,
+  );
   if (!post) {
-    return {
-      ok: false,
-      status: 400,
-      message: 'Post not found',
-    };
+    throw new AppError('Post not found', code.BAD_REQUEST);
+  }
+  return post;
+};
+
+const remove = async (input: { id: string; user_id: string }) => {
+  const { id, user_id } = input;
+  const isValidPostId = isValidUUID(id);
+  if (!isValidPostId) {
+    throw new AppError('Post not found', code.BAD_REQUEST);
+  }
+  const post = await postRepository.remove(id, user_id);
+  if (!post) {
+    throw new AppError('Post not found', code.BAD_REQUEST);
   }
   return post;
 };
 
 const postService = {
   create,
-  getPosts,
+  list,
   update,
+  remove,
 };
 
 export default postService;
