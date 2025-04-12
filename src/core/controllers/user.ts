@@ -7,9 +7,9 @@ export const register = async (req: Request, res: Response) => {
   const { email, password, username } = userRegisterSchema.parse(req.body);
   const data = await userService.register({ email, password, username });
   setCookie({ name: 'token', data, res });
-  res.status(200).json({
+  res.status(201).json({
     ok: true,
-    status: 200,
+    status: 201,
     message: 'User created successfully',
     data: { ...data, password: undefined },
   });

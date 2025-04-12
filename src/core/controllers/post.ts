@@ -6,9 +6,9 @@ const create = async (req: Request, res: Response) => {
   const { title, content } = createPostSchema.parse(req.body);
   const user_id = req.user.id;
   const post = await postService.create({ title, content, user_id });
-  res.status(200).json({
+  res.status(201).json({
     ok: true,
-    status: 200,
+    status: 201,
     message: 'Post created successfully',
     data: post,
   });

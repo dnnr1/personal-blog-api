@@ -38,7 +38,7 @@ const update = async (
   return result;
 };
 
-const remove = async (id: string, user_id: string): Promise<any> => {
+const remove = async (id: string, user_id: string): Promise<PostBaseSchema> => {
   const [result] = await db('posts')
     .where({ id, user_id })
     .del()
