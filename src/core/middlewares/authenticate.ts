@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
+import { code } from '../utils/constants';
 
 const { JWT_SECRET } = process.env;
 
@@ -17,9 +18,9 @@ export const authenticate = (
 ) => {
   const token = req.cookies.token;
   if (!token) {
-    res.status(401).json({
+    res.status(code.UNAUTHORIZED).json({
       ok: false,
-      status: 401,
+      status: code.UNAUTHORIZED,
       message: 'UNAUTHORIZED',
     });
     return;
@@ -29,9 +30,9 @@ export const authenticate = (
     req.user = decoded as TokenPayload;
     next();
   } catch (error) {
-    res.status(401).json({
+    res.status(code.UNAUTHORIZED).json({
       ok: false,
-      status: 401,
+      status: code.UNAUTHORIZED,
       message: 'UNAUTHORIZED',
     });
   }

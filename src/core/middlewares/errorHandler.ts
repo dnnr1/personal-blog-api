@@ -1,23 +1,35 @@
-import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../utils/AppError';
+import type { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-
-const env = process.env.NODE_ENV || 'development';
+import { code } from '../utils/constants';
 
 const errorHandler = (
-  err: unknown,
-  req: Request,
+  err: Error | z.ZodError | unknown,
+  _: Request,
   res: Response,
-  next: NextFunction,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  __: NextFunction,
 ) => {
   if (err instanceof z.ZodError) {
-    res.status(400).json({ ok: false, status: 400, errors: err.errors });
+    res.status(code.BAD_REQUEST).json({
+      ok: false,
+      status: code.BAD_REQUEST,
+      errors: err.errors,
+    });
     return;
   }
-  res.status(500).json({
+  if (err instanceof AppError) {
+    res.status(err.status).json({
+      ok: false,
+      status: err.status,
+      message: err.message,
+    });
+    return;
+  }
+  res.status(code.INTERNAL_SERVER_ERROR).json({
     ok: false,
-    status: 500,
+    status: code.INTERNAL_SERVER_ERROR,
     message: 'Internal server error',
-    errors: env === 'production' ? undefined : err,
   });
 };
 

@@ -1,118 +1,53 @@
-import knex from '../../db';
-import { postInputSchema } from '../schemas/post';
-import isValidUUID from '../utils/isValidUUID';
-import { Request, Response } from 'express';
+import postService from '../services/post';
+import type { Request, Response } from 'express';
+import { createPostSchema, updatePostSchema } from '../schemas/post';
+import { code } from '../utils/constants';
 
 const create = async (req: Request, res: Response) => {
-  const { title, content } = postInputSchema.parse(req.body);
-  const { id } = req.user;
-  const [post] = await knex('posts')
-    .insert({ title, content, user_id: id })
-    .returning('*');
-  res.status(201).json({
+  const { title, content } = createPostSchema.parse(req.body);
+  const user_id = req.user.id;
+  const data = await postService.create({ title, content, user_id });
+  res.status(code.CREATED).json({
     ok: true,
-    status: 201,
+    status: code.CREATED,
     message: 'Post created successfully',
-    post: {
-      id: post.id,
-      title,
-      content,
-      created_at: post.created_at,
-      updated_at: post.updated_at,
-    },
+    data,
   });
 };
 
 const list = async (_: Request, res: Response) => {
-  const posts = await knex('posts')
-    .select(
-      'posts.id',
-      'users.username',
-      'posts.title',
-      'posts.content',
-      'posts.created_at',
-      'posts.updated_at',
-    )
-    .join('users', 'posts.user_id', '=', 'users.id')
-    .orderBy('posts.created_at', 'desc');
-  res.status(200).json({
+  const data = await postService.list();
+  res.status(code.OK).json({
     ok: true,
-    status: 200,
+    status: code.OK,
     message: 'Posts retrieved successfully',
-    posts,
+    data,
   });
 };
 
 const update = async (req: Request, res: Response) => {
+  const { title, content } = updatePostSchema.parse(req.body);
   const { id } = req.params;
-  const { id: userId, username } = req.user;
-  const { title, content } = postInputSchema.parse(req.body);
-  const updated_at = new Date();
-  const isValidPostId = isValidUUID(id);
-  if (!isValidPostId) {
-    res.status(400).json({
-      ok: false,
-      status: 400,
-      message: 'Post not found',
-    });
-    return;
-  }
-  const [post] = await knex('posts')
-    .where({ id, user_id: userId })
-    .update({ title, content, updated_at })
-    .returning('*');
-  if (!post) {
-    res.status(404).json({
-      ok: false,
-      status: 404,
-      message: 'Post not found',
-    });
-    return;
-  }
-  res.status(200).json({
+  const user_id = req.user.id;
+  const data = await postService.update({ title, content, id, user_id });
+  res.status(code.OK).json({
     ok: true,
-    status: 200,
+    status: code.OK,
     message: 'Post updated successfully',
-    post: {
-      id: post.id,
-      username,
-      title: post.title,
-      content: post.content,
-      created_at: post.created_at,
-      updated_at: post.updated_at,
-    },
+    data,
   });
 };
 
-const del = async (req: Request, res: Response) => {
+const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { id: userId } = req.user;
-  const isValidPostId = isValidUUID(id);
-  if (!isValidPostId) {
-    res.status(400).json({
-      ok: false,
-      status: 400,
-      message: 'Post not found',
-    });
-    return;
-  }
-  const [deletedPost] = await knex('posts')
-    .where({ id, user_id: userId })
-    .del()
-    .returning('*');
-  if (!deletedPost) {
-    res.status(404).json({
-      ok: false,
-      status: 404,
-      message: 'Post not found',
-    });
-    return;
-  }
-  res.status(200).json({
+  const user_id = req.user.id;
+  const data = await postService.remove({ id, user_id });
+  res.status(code.OK).json({
     ok: true,
-    status: 200,
+    status: code.OK,
     message: 'Post deleted successfully',
+    data,
   });
 };
 
-export { create, list, update, del };
+export { create, list, update, remove };

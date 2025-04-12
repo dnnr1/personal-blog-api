@@ -1,65 +1,33 @@
 import bcrypt from 'bcrypt';
 import userRepository from '../repositories/user';
-import type {
-  UserBaseSchema,
-  UserLoginInputSchema,
-  UserRegisterInputSchema,
-} from '../schemas/user';
-import type { ApiResponse } from '../../types';
+import { AppError } from '../utils/AppError';
 import { code } from '../utils/constants';
+import { UserLoginInput, UserRegisterInput } from '../models/user';
+import { omit } from 'lodash';
 
-const register = async (
-  input: UserRegisterInputSchema,
-): Promise<ApiResponse<UserBaseSchema>> => {
+const register = async (input: UserRegisterInput) => {
   const existingUser = await userRepository.findByEmail(input.email);
+  const saltRounds = 10;
   if (existingUser) {
-    return {
-      ok: false,
-      status: code.CONFLICT,
-      message: 'User already exists',
-    };
+    throw new AppError('User already exists', code.CONFLICT);
   }
-  const hashedPassword = await bcrypt.hash(input.password, 10);
+  const hashedPassword = await bcrypt.hash(input.password, saltRounds);
   const data = await userRepository.create({
     ...input,
     password: hashedPassword,
   });
-  return {
-    ok: true,
-    status: code.CREATED,
-    data: {
-      id: data.id,
-      username: data.username,
-      email: data.email,
-      created_at: data.created_at,
-      updated_at: data.updated_at,
-    },
-  };
+  const dataWithoutPassword = omit(data, ['password']);
+  return dataWithoutPassword;
 };
 
-const login = async (
-  input: UserLoginInputSchema,
-): Promise<ApiResponse<UserBaseSchema>> => {
+const login = async (input: UserLoginInput) => {
   const { email, password } = input;
-  const user = await userRepository.findByEmail(email);
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return {
-      ok: false,
-      status: code.UNAUTHORIZED,
-      message: 'Invalid credentials',
-    };
+  const data = await userRepository.findByEmail(email);
+  if (!data || !(await bcrypt.compare(password, data.password))) {
+    throw new AppError('Invalid credentials', code.UNAUTHORIZED);
   }
-  return {
-    ok: true,
-    status: code.OK,
-    data: {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-    },
-  };
+  const dataWithoutPassword = omit(data, ['password']);
+  return dataWithoutPassword;
 };
 
 const userService = {
