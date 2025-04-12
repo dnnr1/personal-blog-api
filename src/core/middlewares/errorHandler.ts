@@ -11,9 +11,9 @@ const errorHandler = (
   __: NextFunction,
 ) => {
   if (err instanceof z.ZodError) {
-    res.status(code.UNAUTHORIZED).json({
+    res.status(code.BAD_REQUEST).json({
       ok: false,
-      status: code.UNAUTHORIZED,
+      status: code.BAD_REQUEST,
       errors: err.errors,
     });
     return;
