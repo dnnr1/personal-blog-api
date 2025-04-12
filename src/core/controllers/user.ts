@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import userService from '../services/user';
-import { userLoginSchema, userRegisterSchema } from '../schemas/user';
 import setCookie from '../utils/setCookie';
+import { userLoginSchema, userRegisterSchema } from '../schemas/user';
 
 export const register = async (req: Request, res: Response) => {
   const { email, password, username } = userRegisterSchema.parse(req.body);
@@ -11,7 +11,7 @@ export const register = async (req: Request, res: Response) => {
     ok: true,
     status: 201,
     message: 'User created successfully',
-    data: { ...data, password: undefined },
+    data,
   });
 };
 
@@ -23,6 +23,6 @@ export const login = async (req: Request, res: Response) => {
     ok: true,
     status: 200,
     message: 'Login successful',
-    data: { ...data, password: undefined },
+    data,
   });
 };

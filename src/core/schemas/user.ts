@@ -13,7 +13,7 @@ export const userLoginSchema = userRegisterSchema.merge(
   }),
 );
 
-export const userBaseSchema = z.object({
+export const userInternalSchema = z.object({
   id: z.string(),
   username: z.string(),
   password: z.string(),
@@ -22,6 +22,9 @@ export const userBaseSchema = z.object({
   updated_at: z.string(),
 });
 
-export type UserBase = z.infer<typeof userBaseSchema>;
+export const userPublicSchema = userInternalSchema.omit({ password: true });
+
+export type UserInternal = z.infer<typeof userInternalSchema>;
+export type UserPublic = z.infer<typeof userPublicSchema>;
 export type UserRegisterInput = z.infer<typeof userRegisterSchema>;
 export type UserLoginInput = z.infer<typeof userLoginSchema>;

@@ -1,7 +1,7 @@
 import knex from '../../db';
-import { UserBase } from '../schemas/user';
+import { UserInternal } from '../schemas/user';
 
-const findByEmail = async (email: string): Promise<UserBase> => {
+const findByEmail = async (email: string): Promise<UserInternal> => {
   const result = await knex('users').where({ email }).first();
   return result;
 };
@@ -10,7 +10,7 @@ const create = async (user: {
   email: string;
   username: string;
   password: string;
-}): Promise<UserBase> => {
+}): Promise<UserInternal> => {
   const [result] = await knex('users').insert(user).returning('*');
   return result;
 };
