@@ -20,9 +20,9 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = userLoginSchema.parse(req.body);
   const data = await userService.login({ email, password });
   setCookie({ name: 'token', data, res });
-  res.status(code.CREATED).json({
+  res.status(code.OK).json({
     ok: true,
-    status: code.CREATED,
+    status: code.OK,
     message: 'Login successful',
     data,
   });

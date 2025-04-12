@@ -30,9 +30,9 @@ const update = async (req: Request, res: Response) => {
   const { id } = req.params;
   const user_id = req.user.id;
   const data = await postService.update({ title, content, id, user_id });
-  res.status(code.CREATED).json({
+  res.status(code.OK).json({
     ok: true,
-    status: code.CREATED,
+    status: code.OK,
     message: 'Post updated successfully',
     data,
   });
