@@ -14,17 +14,9 @@
     "pretest": "npm run compile",
     "posttest": "npm run lint"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dnnr1/personal-blog-api.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/dnnr1/personal-blog-api/issues"
-  },
-  "homepage": "https://github.com/dnnr1/personal-blog-api#readme",
   "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
