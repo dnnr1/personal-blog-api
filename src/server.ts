@@ -7,6 +7,7 @@ import 'dotenv/config';
 
 const app = express();
 const port = process.env.PORT || 3000;
+const baseUrl = '/blog-api';
 
 const corsOptions = {
   origin: process.env.FRONTEND_URL || '*',
@@ -19,7 +20,7 @@ app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use(router);
+app.use(baseUrl, router);
 app.use(errorHandler);
 
 app.listen(port, () => {
