@@ -9,6 +9,6 @@
     "skipLibCheck": true,
     "rootDirs": ["."]
   },
-  "include": ["**/*.ts", "src/**/*.ts"],
+  "include": ["**/*.ts", "src/**/*.ts", "**/*.d.ts"],
   "exclude": ["node_modules", "build"]
 }

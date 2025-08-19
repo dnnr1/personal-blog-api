@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
+import { AppError } from '../utils/AppError';
 import { code } from '../utils/constants';
 
 const { JWT_SECRET } = process.env;
@@ -13,27 +14,24 @@ type TokenPayload = {
 
 export const authenticate = (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction,
 ) => {
-  const token = req.cookies.token;
+  const cookieToken = req.cookies?.token as string | undefined;
+  const authHeader = req.headers?.authorization;
+  const bearerToken = authHeader?.startsWith('Bearer ')
+    ? authHeader.slice('Bearer '.length)
+    : undefined;
+
+  const token = cookieToken || bearerToken;
   if (!token) {
-    res.status(code.UNAUTHORIZED).json({
-      ok: false,
-      status: code.UNAUTHORIZED,
-      message: 'UNAUTHORIZED',
-    });
-    return;
+    return next(new AppError('UNAUTHORIZED', code.UNAUTHORIZED));
   }
   try {
     const decoded = jwt.verify(token, JWT_SECRET as string);
     req.user = decoded as TokenPayload;
-    next();
-  } catch (error) {
-    res.status(code.UNAUTHORIZED).json({
-      ok: false,
-      status: code.UNAUTHORIZED,
-      message: 'UNAUTHORIZED',
-    });
+    return next();
+  } catch {
+    return next(new AppError('UNAUTHORIZED', code.UNAUTHORIZED));
   }
 };

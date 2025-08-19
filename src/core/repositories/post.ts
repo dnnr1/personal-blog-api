@@ -11,26 +11,46 @@ const list = async (): Promise<Posts> => {
     .select(
       'posts.id',
       'posts.user_id',
-      'users.username',
+      'users.username as author',
       'posts.title',
       'posts.content',
       'posts.created_at',
       'posts.updated_at',
+      'posts.pictureUrl',
     )
     .join('users', 'posts.user_id', '=', 'users.id');
   return posts;
 };
 
+const get = async (id: string): Promise<Post | null> => {
+  const post = await db('posts')
+    .select(
+      'posts.id',
+      'posts.user_id',
+      'users.username as author',
+      'posts.title',
+      'posts.content',
+      'posts.created_at',
+      'posts.updated_at',
+      'posts.pictureUrl',
+    )
+    .join('users', 'posts.user_id', '=', 'users.id')
+    .where('posts.id', id)
+    .first();
+  return post;
+};
+
 const update = async (
   title: string,
   content: string,
+  pictureUrl: string | undefined,
   user_id: string,
   updated_at: Date,
   id: string,
 ): Promise<Post> => {
   const [result] = await db('posts')
     .where({ id, user_id })
-    .update({ title, content, updated_at })
+    .update({ title, content, pictureUrl, updated_at })
     .returning('*');
   return result;
 };
@@ -45,6 +65,7 @@ const remove = async (id: string, user_id: string): Promise<Post> => {
 
 const postRepository = {
   create,
+  get,
   list,
   update,
   remove,

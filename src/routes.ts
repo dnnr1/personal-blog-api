@@ -9,6 +9,7 @@ const router = Router();
 router.post('/register', asyncHandler(userController.register));
 router.post('/login', asyncHandler(userController.login));
 router.get('/posts', asyncHandler(postController.list));
+router.get('/posts/:id', asyncHandler(postController.get));
 
 // private routes
 router.use(authenticate);

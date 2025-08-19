@@ -16,22 +16,24 @@ const list = async () => {
   return await postRepository.list();
 };
 
-const update = async (input: PostUpdateInput) => {
-  const { title, content, id, user_id } = input;
+const get = async (id: string) => {
   const isValidPostId = isValidUUID(id);
   if (!isValidPostId) {
-    throw new AppError('Post not found', code.BAD_REQUEST);
+    throw new AppError('Post not found', code.NOT_FOUND);
+  }
+  return await postRepository.get(id);
+};
+
+const update = async (input: PostUpdateInput) => {
+  const { id } = input;
+  const isValidPostId = isValidUUID(id);
+  if (!isValidPostId) {
+    throw new AppError('Post not found', code.NOT_FOUND);
   }
   const updated_at = new Date();
-  const post = await postRepository.update(
-    title,
-    content,
-    user_id,
-    updated_at,
-    id,
-  );
+  const post = await postRepository.update({ ...input, updated_at });
   if (!post) {
-    throw new AppError('Post not found', code.BAD_REQUEST);
+    throw new AppError('Post not found', code.NOT_FOUND);
   }
   return post;
 };
@@ -40,11 +42,11 @@ const remove = async (input: PostDeleteInput) => {
   const { id, user_id } = input;
   const isValidPostId = isValidUUID(id);
   if (!isValidPostId) {
-    throw new AppError('Post not found', code.BAD_REQUEST);
+    throw new AppError('Post not found', code.NOT_FOUND);
   }
   const post = await postRepository.remove(id, user_id);
   if (!post) {
-    throw new AppError('Post not found', code.BAD_REQUEST);
+    throw new AppError('Post not found', code.NOT_FOUND);
   }
   return post;
 };
@@ -53,6 +55,7 @@ const postService = {
   create,
   list,
   update,
+  get,
   remove,
 };
 
