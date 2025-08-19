@@ -1,5 +1,5 @@
 import db from '../../db';
-import { Post, PostCreateInput, Posts } from '../models/post';
+import { Post, PostCreateInput, Posts, PostUpdateInput } from '../models/post';
 
 const create = async (post: PostCreateInput): Promise<Post> => {
   const [result] = await db('posts').insert(post).returning('*');
@@ -40,14 +40,9 @@ const get = async (id: string): Promise<Post | null> => {
   return post;
 };
 
-const update = async (
-  title: string,
-  content: string,
-  pictureUrl: string | undefined,
-  user_id: string,
-  updated_at: Date,
-  id: string,
-): Promise<Post> => {
+const update = async (input: PostUpdateInput): Promise<Post> => {
+  const { title, content, pictureUrl, user_id, id } = input;
+  const updated_at = new Date();
   const [result] = await db('posts')
     .where({ id, user_id })
     .update({ title, content, pictureUrl, updated_at })

@@ -30,8 +30,7 @@ const update = async (input: PostUpdateInput) => {
   if (!isValidPostId) {
     throw new AppError('Post not found', code.NOT_FOUND);
   }
-  const updated_at = new Date();
-  const post = await postRepository.update({ ...input, updated_at });
+  const post = await postRepository.update({ ...input });
   if (!post) {
     throw new AppError('Post not found', code.NOT_FOUND);
   }
