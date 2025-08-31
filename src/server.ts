@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors, { CorsOptions } from 'cors';
 import router from './routes';
 import errorHandler from './core/middlewares/errorHandler';
+import { init as initMinio } from './core/storage/minio';
 import 'dotenv/config';
 
 const app = express();
@@ -33,4 +34,9 @@ app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);
+  try {
+    initMinio();
+  } catch (error) {
+    console.error('Error initializing MinIO:', error);
+  }
 });

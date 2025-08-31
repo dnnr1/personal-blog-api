@@ -1,6 +1,8 @@
 import * as userController from './core/controllers/user';
 import * as postController from './core/controllers/post';
+import * as uploadController from './core/controllers/upload';
 import { authenticate } from './core/middlewares/authenticate';
+import upload from './core/middlewares/upload';
 import asyncHandler from './core/utils/asyncHandler';
 import { Router } from 'express';
 
@@ -16,5 +18,12 @@ router.use(authenticate);
 router.post('/posts', asyncHandler(postController.create));
 router.put('/posts/:id', asyncHandler(postController.update));
 router.delete('/posts/:id', asyncHandler(postController.remove));
+
+//image upload
+router.post(
+  '/upload',
+  upload.single('image'),
+  asyncHandler(uploadController.uploadPostImage),
+);
 
 export default router;

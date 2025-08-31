@@ -6,3 +6,9 @@ NODE_ENV=development
 PORT=3000
 JWT_SECRET=deeznuts
 FRONTEND_URL=
+
+# MinIO Configuration
+ENDPOINT=localhost
+ACCESS_KEY=dan1xk
+SECRET_KEY=mypasswordrighthere
+BUCKET_NAME=blog-images

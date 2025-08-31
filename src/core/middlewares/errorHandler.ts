@@ -26,6 +26,8 @@ const errorHandler = (
     });
     return;
   }
+  console.log(err);
+
   res.status(code.INTERNAL_SERVER_ERROR).json({
     ok: false,
     status: code.INTERNAL_SERVER_ERROR,
