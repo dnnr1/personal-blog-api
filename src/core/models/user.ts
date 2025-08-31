@@ -7,7 +7,15 @@ export type User = {
   updated_at: Date;
 };
 
-export type UserCreateInput = Omit<User, 'id' | 'created_at' | 'updated_at'>;
-export type UserLoginInput = Pick<User, 'email' | 'password'>;
-export type UserRegisterInput = Pick<User, 'email' | 'password' | 'username'>;
+export type UserCreateInput = {
+  username: string;
+  email: string;
+  password: string;
+};
+
+export type UserLoginInput = {
+  email: string;
+  password: string;
+};
+
 export type UserResponse = Omit<User, 'password'>;

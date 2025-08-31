@@ -2,10 +2,10 @@ import bcrypt from 'bcrypt';
 import userRepository from '../repositories/user';
 import { AppError } from '../utils/AppError';
 import { code } from '../utils/constants';
-import { UserLoginInput, UserRegisterInput } from '../models/user';
+import { UserLoginInput, UserCreateInput } from '../models/user';
 import { omit } from 'lodash';
 
-const register = async (input: UserRegisterInput) => {
+const register = async (input: UserCreateInput) => {
   const existingUser = await userRepository.findByEmail(input.email);
   const saltRounds = 10;
   if (existingUser) {
