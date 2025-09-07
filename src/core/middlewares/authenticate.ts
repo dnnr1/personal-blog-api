@@ -18,17 +18,11 @@ export const authenticate = (
   next: NextFunction,
 ) => {
   const cookieToken = req.cookies?.token as string | undefined;
-  const authHeader = req.headers?.authorization;
-  const bearerToken = authHeader?.startsWith('Bearer ')
-    ? authHeader.slice('Bearer '.length)
-    : undefined;
-
-  const token = cookieToken || bearerToken;
-  if (!token) {
+  if (!cookieToken) {
     return next(new AppError('UNAUTHORIZED', code.UNAUTHORIZED));
   }
   try {
-    const decoded = jwt.verify(token, JWT_SECRET as string);
+    const decoded = jwt.verify(cookieToken, JWT_SECRET as string);
     req.user = decoded as TokenPayload;
     return next();
   } catch {
