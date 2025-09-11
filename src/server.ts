@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000;
 const baseUrl = '/blog-api';
 
 const corsOptions: CorsOptions = {
-  origin: process.env.FRONTEND_URL || '*',
+  origin: process.env.FRONTEND_URL,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: [
