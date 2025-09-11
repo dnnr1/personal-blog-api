@@ -12,3 +12,4 @@ ENDPOINT=localhost
 ACCESS_KEY=dan1xk
 SECRET_KEY=mypasswordrighthere
 BUCKET_NAME=blog-images
+MINIO_PUBLIC_URL=http://localhost:9000

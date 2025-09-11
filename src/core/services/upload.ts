@@ -12,11 +12,10 @@ const uploadPostImage = async (file: Express.Multer.File): Promise<string> => {
     await minioClient.putObject(bucketName, fileName, file.buffer, file.size, {
       'Content-Type': file.mimetype,
     });
-    return await minioClient.presignedGetObject(
-      bucketName,
-      fileName,
-      24 * 60 * 60 * 7,
-    );
+    const publicBase = (process.env.MINIO_PUBLIC_URL || '').replace(/\/+$/, '');
+    const fallbackBase = `http://${process.env.ENDPOINT || 'localhost'}:9000`;
+    const baseUrl = publicBase || fallbackBase;
+    return `${baseUrl}/${bucketName}/${fileName}`;
   } catch (error) {
     throw new AppError('Upload failed', code.INTERNAL_SERVER_ERROR);
   }
