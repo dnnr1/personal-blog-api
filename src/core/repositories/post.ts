@@ -18,6 +18,7 @@ const list = async (): Promise<Posts> => {
       'posts.updated_at',
       'posts.pictureUrl',
     )
+    .orderBy('created_at', 'desc')
     .join('users', 'posts.user_id', '=', 'users.id');
   return posts;
 };
