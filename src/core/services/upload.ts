@@ -20,8 +20,15 @@ const uploadPostImage = async (file: Express.Multer.File): Promise<string> => {
     throw new AppError('Upload failed', code.INTERNAL_SERVER_ERROR);
   }
 };
+const uploadPostImages = async (
+  files: Express.Multer.File[],
+): Promise<string[]> => {
+  const uploads = files.map(file => uploadPostImage(file));
+  return Promise.all(uploads);
+};
 const uploadService = {
   uploadPostImage,
+  uploadPostImages,
 };
 
 export default uploadService;

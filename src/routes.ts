@@ -22,8 +22,8 @@ router.delete('/posts/:id', asyncHandler(postController.remove));
 //image upload
 router.post(
   '/upload',
-  upload.single('image'),
-  asyncHandler(uploadController.uploadPostImage),
+  upload.array('image'),
+  asyncHandler(uploadController.uploadPostImages),
 );
 
 export default router;
