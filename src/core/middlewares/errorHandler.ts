@@ -14,6 +14,7 @@ const errorHandler = (
     res.status(code.BAD_REQUEST).json({
       ok: false,
       status: code.BAD_REQUEST,
+      message: 'Validation error',
       errors: err.errors,
     });
     return;
@@ -27,11 +28,10 @@ const errorHandler = (
     return;
   }
   console.log(err);
-
   res.status(code.INTERNAL_SERVER_ERROR).json({
     ok: false,
     status: code.INTERNAL_SERVER_ERROR,
-    message: 'Internal server error',
+    message: err instanceof Error ? err.message : 'Internal server error',
   });
 };
 
