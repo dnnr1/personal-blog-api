@@ -24,9 +24,9 @@ function connect(
 function init(): Client {
   if (!minioClient) {
     minioClient = connect(
-      process.env.ENDPOINT as string,
-      process.env.ACCESS_KEY as string,
-      process.env.SECRET_KEY as string,
+      process.env.MINIO_ENDPOINT as string,
+      process.env.MINIO_ACCESS_KEY as string,
+      process.env.MINIO_SECRET_KEY as string,
     );
   }
   return minioClient;

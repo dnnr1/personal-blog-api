@@ -1,15 +1,17 @@
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
 POSTGRES_DB=blog_db
 POSTGRES_USER=user
 POSTGRES_PASSWORD=password
-POSTGRES_HOST=localhost
-NODE_ENV=development
+NODE_ENV=production
 PORT=3000
 JWT_SECRET=deeznuts
-FRONTEND_URL=
+ORIGIN=http://localhost:3000
 
-# MinIO Configuration
-ENDPOINT=localhost
-ACCESS_KEY=dan1xk
-SECRET_KEY=mypasswordrighthere
+# MinIO
+MINIO_ENDPOINT=localhost
+MINIO_PORT=9000
+MINIO_ACCESS_KEY=dan1xk
+MINIO_SECRET_KEY=mypasswordrighthere
 BUCKET_NAME=blog-images
 MINIO_PUBLIC_URL=http://localhost:9000
