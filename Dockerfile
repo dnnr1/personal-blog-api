@@ -18,6 +18,7 @@ ENV NODE_ENV=production
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/build ./build
+COPY --from=builder /app/build/src/db/migrations ./src/db/migrations
 COPY --from=builder /app/build/knexfile.js ./knexfile.js
 
 EXPOSE 3000
