@@ -1,4 +1,4 @@
-import { Knex } from 'knex';
+import type { Knex } from 'knex';
 import 'dotenv/config';
 
 const config: { [key: string]: Knex.Config } = {
@@ -26,10 +26,10 @@ const config: { [key: string]: Knex.Config } = {
       database: process.env.POSTGRES_DB,
     },
     migrations: {
-      directory: './src/db/migrations',
+      directory: './build/db/migrations',
     },
     seeds: {
-      directory: './src/db/seeds',
+      directory: './build/db/seeds',
     },
   },
 };
