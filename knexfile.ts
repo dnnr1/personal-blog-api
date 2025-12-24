@@ -24,6 +24,7 @@ const config: { [key: string]: Knex.Config } = {
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
+      ssl: true,
     },
     migrations: {
       directory: './build/db/migrations',
