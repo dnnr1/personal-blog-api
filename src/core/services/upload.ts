@@ -17,6 +17,7 @@ const uploadPostImage = async (file: Express.Multer.File): Promise<string> => {
     const baseUrl = publicBase || fallbackBase;
     return `${baseUrl}/${bucketName}/${fileName}`;
   } catch (error) {
+    console.log(error);
     throw new AppError('Upload failed', code.INTERNAL_SERVER_ERROR);
   }
 };
