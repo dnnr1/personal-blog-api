@@ -6,23 +6,18 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-
 RUN npm run build
 
 FROM node:18-alpine
 
 WORKDIR /app
 
+RUN apk add --no-cache dumb-init
+
 COPY package*.json ./
 RUN npm ci --only=production
 
 COPY --from=builder /app/build ./build
-
-EXPOSE 3000
-
-RUN apk add --no-cache dumb-init
-
-RUN chown -R node:node /app
 
 USER node
 
