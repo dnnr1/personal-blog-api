@@ -21,7 +21,11 @@ const get = async (id: string) => {
   if (!isValidPostId) {
     throw new AppError('Post not found', code.NOT_FOUND);
   }
-  return await postRepository.get(id);
+  const post = await postRepository.get(id);
+  if (!post) {
+    throw new AppError('Post not found', code.NOT_FOUND);
+  }
+  return post;
 };
 
 const update = async (input: PostUpdateInput) => {
