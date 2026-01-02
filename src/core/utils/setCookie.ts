@@ -14,7 +14,9 @@ const setCookie = ({ name, data, res }: Cookie) => {
   const token = jwt.sign(data, JWT_SECRET as string, { expiresIn: '3d' });
   res.cookie(name, token, {
     httpOnly: true,
+    sameSite: 'lax',
     secure: NODE_ENV === 'production',
+    path: '/',
     maxAge: 3 * 24 * 60 * 60 * 1000,
   });
   return token;
