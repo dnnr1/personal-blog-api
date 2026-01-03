@@ -10,6 +10,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "knexfile.ts"],
+  "include": ["src/**/*", "__tests__/**/*", "knexfile.ts"],
   "exclude": ["node_modules"]
 }
