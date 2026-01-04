@@ -13,13 +13,11 @@ router.post('/login', asyncHandler(userController.login));
 router.get('/posts', asyncHandler(postController.list));
 router.get('/posts/:id', asyncHandler(postController.get));
 
-// private routes
 router.use(authenticate);
 router.post('/posts', asyncHandler(postController.create));
 router.put('/posts/:id', asyncHandler(postController.update));
 router.delete('/posts/:id', asyncHandler(postController.remove));
 
-//image upload
 router.post(
   '/upload',
   upload.array('image'),
