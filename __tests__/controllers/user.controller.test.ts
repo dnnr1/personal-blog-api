@@ -1,20 +1,21 @@
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import * as userController from '../../src/core/controllers/user';
 import userService from '../../src/core/services/user';
-import setCookie from '../../src/core/utils/setCookie';
 import { code } from '../../src/core/utils/constants';
 
 jest.mock('../../src/core/services/user');
-jest.mock('../../src/core/utils/setCookie');
+jest.mock('jsonwebtoken');
 
 const mockedUserService = userService as jest.Mocked<typeof userService>;
-const mockedSetCookie = setCookie as jest.MockedFunction<typeof setCookie>;
+const mockedJwt = jwt as jest.Mocked<typeof jwt>;
 
 describe('User controller', () => {
   let mockReq: Partial<Request>;
   let mockRes: Partial<Response>;
 
   beforeEach(() => {
+    process.env.JWT_SECRET = 'test-secret';
     mockReq = {
       body: {},
     };
@@ -41,21 +42,25 @@ describe('User controller', () => {
 
       mockReq.body = userData;
       mockedUserService.register.mockResolvedValue(registeredUser as any);
+      (mockedJwt.sign as jest.Mock).mockReturnValue('mock-token');
 
       await userController.register(mockReq as Request, mockRes as Response);
 
       expect(mockedUserService.register).toHaveBeenCalledWith(userData);
-      expect(mockedSetCookie).toHaveBeenCalledWith({
-        name: 'token',
-        data: registeredUser,
-        res: mockRes,
-      });
+      expect(mockedJwt.sign).toHaveBeenCalledWith(
+        registeredUser,
+        'test-secret',
+        {
+          expiresIn: '3d',
+        },
+      );
       expect(mockRes.status).toHaveBeenCalledWith(code.CREATED);
       expect(mockRes.json).toHaveBeenCalledWith({
         ok: true,
         status: code.CREATED,
         message: 'User created successfully',
         data: registeredUser,
+        token: 'mock-token',
       });
     });
   });
@@ -75,14 +80,13 @@ describe('User controller', () => {
 
       mockReq.body = loginData;
       mockedUserService.login.mockResolvedValue(loggedInUser as any);
+      (mockedJwt.sign as jest.Mock).mockReturnValue('mock-token');
 
       await userController.login(mockReq as Request, mockRes as Response);
 
       expect(mockedUserService.login).toHaveBeenCalledWith(loginData);
-      expect(mockedSetCookie).toHaveBeenCalledWith({
-        name: 'token',
-        data: loggedInUser,
-        res: mockRes,
+      expect(mockedJwt.sign).toHaveBeenCalledWith(loggedInUser, 'test-secret', {
+        expiresIn: '3d',
       });
       expect(mockRes.status).toHaveBeenCalledWith(code.OK);
       expect(mockRes.json).toHaveBeenCalledWith({
@@ -90,6 +94,7 @@ describe('User controller', () => {
         status: code.OK,
         message: 'Login successful',
         data: loggedInUser,
+        token: 'mock-token',
       });
     });
   });

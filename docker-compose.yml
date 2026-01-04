@@ -1,6 +1,25 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - '8080:8080'
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      createbuckets:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    networks:
+      - blog-network
+
   db:
-    image: postgres:14
+    image: postgres:14-alpine
     env_file:
       - .env
     volumes:
@@ -12,30 +31,50 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    networks:
+      - blog-network
 
   minio:
     image: minio/minio
     env_file:
       - .env
-    command: server /data
+    command: server /data --console-address ":9001"
     ports:
       - '9000:9000'
     volumes:
       - minio:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - blog-network
 
   createbuckets:
     image: minio/mc
     env_file:
       - .env
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set local http://minio:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY &&
-      /usr/bin/mc mb local/$BUCKET_NAME --ignore-existing &&
-      /usr/bin/mc anonymous set download local/$BUCKET_NAME &&
+      sleep 5 &&
+      /usr/bin/mc alias set local http://minio:9000 \$MINIO_ACCESS_KEY \$MINIO_SECRET_KEY &&
+      /usr/bin/mc mb local/\$BUCKET_NAME --ignore-existing &&
+      /usr/bin/mc anonymous set download local/\$BUCKET_NAME &&
+      echo 'Bucket created!' &&
       exit 0;
       "
+    networks:
+      - blog-network
+
+networks:
+  blog-network:
+    driver: bridge
 
 volumes:
   pgdata:

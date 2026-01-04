@@ -1,5 +1,4 @@
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import cors, { CorsOptions } from 'cors';
 import router from './routes';
 import errorHandler from './core/middlewares/errorHandler';
@@ -12,7 +11,6 @@ const baseUrl = '/blog-api';
 
 const corsOptions: CorsOptions = {
   origin: process.env.ORIGIN || '*',
-  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: [
     'Content-Type',
@@ -24,7 +22,6 @@ const corsOptions: CorsOptions = {
 
 app.use(express.json());
 app.use(cors(corsOptions));
-app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.get(`${baseUrl}/health`, (_req, res) => {
   res.json({ ok: true, status: 200, message: 'OK' });

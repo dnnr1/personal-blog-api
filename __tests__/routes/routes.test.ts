@@ -1,6 +1,5 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import request from 'supertest';
-import cookieParser from 'cookie-parser';
 
 const mockUserService = {
   register: jest.fn(),
@@ -33,8 +32,13 @@ const mockUser = {
 
 jest.mock('../../src/core/middlewares/authenticate', () => ({
   authenticate: (req: Request, _res: Response, next: NextFunction) => {
-    const cookieToken = req.cookies?.token as string | undefined;
-    if (!cookieToken) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      const { AppError } = require('../../src/core/utils/AppError');
+      return next(new AppError('UNAUTHORIZED', 401));
+    }
+    const [scheme, token] = authHeader.split(' ');
+    if (scheme?.toLowerCase() !== 'bearer' || !token) {
       const { AppError } = require('../../src/core/utils/AppError');
       return next(new AppError('UNAUTHORIZED', 401));
     }
@@ -57,7 +61,6 @@ describe('Routes Integration', () => {
   beforeAll(() => {
     app = express();
     app.use(express.json());
-    app.use(cookieParser());
     app.use('/blog-api', router);
     app.use(errorHandler);
   });
@@ -176,7 +179,7 @@ describe('Routes Integration', () => {
   });
 
   describe('Protected Routes', () => {
-    const authCookie = 'token=mock-token';
+    const authHeader = 'Bearer mock-token';
 
     describe('POST /blog-api/posts', () => {
       it('should create a post when authenticated', async () => {
@@ -195,7 +198,7 @@ describe('Routes Integration', () => {
 
         const response = await request(app)
           .post('/blog-api/posts')
-          .set('Cookie', authCookie)
+          .set('Authorization', authHeader)
           .send(postData)
           .expect(201);
 
@@ -235,7 +238,7 @@ describe('Routes Integration', () => {
 
         const response = await request(app)
           .put(`/blog-api/posts/${postId}`)
-          .set('Cookie', authCookie)
+          .set('Authorization', authHeader)
           .send(updateData)
           .expect(200);
 
@@ -257,7 +260,7 @@ describe('Routes Integration', () => {
 
         const response = await request(app)
           .delete(`/blog-api/posts/${postId}`)
-          .set('Cookie', authCookie)
+          .set('Authorization', authHeader)
           .expect(200);
 
         expect(response.body.ok).toBe(true);

@@ -16,7 +16,7 @@ describe('authenticate middleware', () => {
   beforeEach(() => {
     process.env.JWT_SECRET = 'test-secret';
     mockReq = {
-      cookies: {},
+      headers: {},
     };
     mockRes = {
       status: jest.fn().mockReturnThis(),
@@ -42,7 +42,7 @@ describe('authenticate middleware', () => {
       email: 'test@example.com',
     };
 
-    mockReq.cookies = { token: 'valid-token' };
+    mockReq.headers = { authorization: 'Bearer valid-token' };
     (mockedJwt.verify as jest.Mock).mockReturnValue(tokenPayload);
 
     authenticate(mockReq as Request, mockRes as Response, mockNext);
@@ -56,7 +56,7 @@ describe('authenticate middleware', () => {
   });
 
   it('should call next with AppError when token is invalid', () => {
-    mockReq.cookies = { token: 'invalid-token' };
+    mockReq.headers = { authorization: 'Bearer invalid-token' };
     (mockedJwt.verify as jest.Mock).mockImplementation(() => {
       throw new Error('Invalid token');
     });
